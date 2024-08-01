@@ -2,8 +2,9 @@
 import Image from "next/image"
 import {useState, useEffect } from "react"
 import {firestore} from "@/firebase"
-import {Box, Typography } from "@mui/material"
-import {collection,deleteDoc,getDocs, query} from 'firebase/firestore'
+import {Box,Modal, Stack, Typography, TextField, Button } from "@mui/material"
+import {collection,deleteDoc,getDocs, query,getDoc} from 'firebase/firestore'
+import { Modern_Antiqua } from "next/font/google"
 export default function Home() {
 // Sate variable to store investory -- empty array
 const [inventory, setInventory]= useState([])
@@ -76,12 +77,56 @@ const handleOpen=()=> setOpen(true)
 const handleClose=()=>setOpen(false)
   return (
 
-    //box is a basic thing in UI
-   <Box> 
-<Typography variant ="h1" >Inventory Management</Typography>{
- 
-}
+    //box is a basic thing in UI , //Model is add product to inventory managemnt mature ui has prebuild models for us
+  // position absolute center the box , transform center it more
+<Box width="100vw" height ="100vh" display ="flex" flexDirection="column" justifyContent="center" alignItems="center" gap={2}> 
+ <Modal
+ open={open}
+ onClose={handleClose}
+ > 
+ <Box position= "absolute" top="50%" left="50%" width={400} bgcolor="white" border="2px solid #000" boxShadow={24} p={4} display="flex" flexDirection="column" gap={3} sx={
+    {transform: 'translate(-50%, -50%)'}
+ }>
+  <Typography variant="h6">Add Item</Typography>
+  <Stack width="100" direction="row" spacing={2}>
 
+  <TextField label="Item Name" variant="outlined" fullWidth value={itemName} onChange={(e)=>setItemName(e.target.value)}/>
+
+  <Button variant="contained" color="primary" onClick={()=>{
+    addItem(itemName) 
+    setItemName('') 
+    handleClose()}}>Add</Button>
+  </Stack>
+ </Box>
+  
+ </Modal>
+<Button variant="contained" onClick={()=>{
+handleOpen()
+}
+}>Add new Item</Button>
+<Box border="1px solid #333"> 
+
+  <Box width="800px" height="100px" bgcolor="#ADD8E6" display="flex" alignItems="center" justifyContent="center"> 
+
+  <Typography variant="h2" color="#333" align="center">Inventory Tracker</Typography>
+  </Box>
+</Box>
+<Stack width="800px" height="100px" spacing={2} overflow="auto"> 
+  {
+    inventory.map((item)=>(
+      <Box key={item.id} display="flex" alignItems="center" justifyContent="space-between" border="1px solid #333" p={2}>
+        <Typography variant="h3">{item.name}</Typography>
+        <Stack direction="row" spacing={2}>
+        <Button variant="contained" color="primary" onClick={()=>addItem(item.id)}>+</Button>
+        <Typography variant="h6">{item.quantity}</Typography>
+        <Button variant="contained" color="secondary" onClick={()=>removeItem(item.id)}>-</Button>
+        </Stack>
+      </Box>
+    ))
+  }
+  
+
+</Stack>
    </Box>
   );
 }
